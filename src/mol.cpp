@@ -2139,6 +2139,13 @@ namespace OpenBabel
       obErrorLog.ThrowError(__FUNCTION__,
                             "Ran OpenBabel::AddHydrogens -- nonpolar only", obAuditMsg);
 
+    // Make sure we have conformers (PR#1665519)
+    if (!_vconf.empty())
+    {
+      BeginModify();
+      EndModify();
+    }
+
     SetHydrogensAdded(); // This must come after EndModify() as EndModify() wipes the flags
     // If chirality was already perceived, remember this (to avoid wiping information
     if (hasChiralityPerceived)
