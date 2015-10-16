@@ -1,4 +1,4 @@
-/**********************************************************************
+/********************************************************************** 
 mol.cpp - Handle molecules.
 
 Copyright (C) 1998-2001 by OpenEye Scientific Software, Inc.
@@ -2140,16 +2140,15 @@ namespace OpenBabel
                             "Ran OpenBabel::AddHydrogens -- nonpolar only", obAuditMsg);
 
     // Make sure we have conformers (PR#1665519)
-    if (!_vconf.empty())
+    if (!_vconf.empty() && !Empty())
     {
+      if(!_c) _c = _vconf[0];
       OBAtom *atom;
       vector<OBAtom*>::iterator i;
-      if(_c == NULL) _c = _vconf[0];
-      for (atom = BeginAtom(i);atom;atom = NextAtom(i))
-        {
-          atom->SetVector();
-          atom->SetCoordPtr(&_c);
-        }
+      for (atom = BeginAtom(i); atom; atom = NextAtom(i))
+      {
+        atom->SetVector();
+      }
     }
 
     SetHydrogensAdded(); // This must come after EndModify() as EndModify() wipes the flags
@@ -2285,7 +2284,6 @@ namespace OpenBabel
       }
 
     DecrementMod();
-    SetConformer(0);
 
     //reset atom type and partial charge flags
     _flags &= (~(OB_PCHARGE_MOL|OB_ATOMTYPES_MOL|OB_SSSR_MOL|OB_AROMATIC_MOL));
