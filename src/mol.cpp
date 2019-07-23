@@ -1261,7 +1261,8 @@ namespace OpenBabel
       this->SetFlag(OB_HYBRID_MOL);
     if (src.HasFlag(OB_AROMATIC_MOL))
       this->SetFlag(OB_AROMATIC_MOL);
-
+    if (src.HasFlag(OB_CHAINS_MOL))
+      this->SetFlag(OB_CHAINS_MOL);
 
     //this->_flags = src.GetFlags(); //Copy all flags. Perhaps too drastic a change
 
@@ -1280,10 +1281,7 @@ namespace OpenBabel
           {
             res = NewResidue();
             src_res = src.GetResidue(k);
-            res->SetName(src_res->GetName());
-            res->SetNum(src_res->GetNumString());
-            res->SetChain(src_res->GetChain());
-            res->SetChainNum(src_res->GetChainNum());
+	    *res = *src_res;
             for (src_atom=src_res->BeginAtom(ii) ; src_atom ; src_atom=src_res->NextAtom(ii))
               {
                 atom = GetAtom(src_atom->GetIdx());
@@ -4069,10 +4067,7 @@ namespace OpenBabel
         OBResidue *newres;
         if (mit == ResidueMap.end()) {
           newres = newmol.NewResidue();
-          newres->SetName(res->GetName());
-          newres->SetNum(res->GetNumString());
-          newres->SetChain(res->GetChain());
-          newres->SetChainNum(res->GetChainNum());
+	  *newres = *res;
           ResidueMap[res] = newres;
         } else {
           newres = mit->second;
