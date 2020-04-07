@@ -104,7 +104,9 @@ namespace OpenBabel
 #define OB_ATOMSPIN_MOL          (1<<21)
   //! Treat as reaction
 #define OB_REACTION_MOL          (1<<22)
-  // flags 22-32 unspecified
+  //! Molecule is repeating in a periodic unit cell
+#define OB_PERIODIC_MOL          (1<<23)
+  // flags 24-32 unspecified
 
 #define SET_OR_UNSET_FLAG(X) \
   if (value) SetFlag(X); \
@@ -387,16 +389,21 @@ enum HydrogenType { AllHydrogen, PolarHydrogen, NonPolarHydrogen };
     //! Mark that ring closure bonds have been assigned by graph traversal
     void   SetClosureBondsPerceived(bool value = true)   { SET_OR_UNSET_FLAG(OB_CLOSURE_MOL);  }
     //! Mark that explicit hydrogen atoms have been added
+
     void   SetHydrogensAdded(bool value = true) { SET_OR_UNSET_FLAG(OB_H_ADDED_MOL); }
     void   SetCorrectedForPH(bool value = true) { SET_OR_UNSET_FLAG(OB_PH_CORRECTED_MOL); }
     void   SetSpinMultiplicityAssigned(bool value = true) { SET_OR_UNSET_FLAG(OB_ATOMSPIN_MOL); }
     //! The OBMol is a pattern, not a complete molecule. Left unchanged by Clear().
     void   SetIsPatternStructure(bool value = true) { SET_OR_UNSET_FLAG(OB_PATTERN_STRUCTURE); }
-    void   SetIsReaction(bool value = true)               { SET_OR_UNSET_FLAG(OB_REACTION_MOL) };
+    void   SetIsReaction(bool value = true)               { SET_OR_UNSET_FLAG(OB_REACTION_MOL); }
+    //! Mark that distance calculations, etc., should apply periodic boundary conditions through the minimimum image convention.
+    //! Does not automatically recalculate bonding.
+    void   SetPeriodicMol(bool value = true){ SET_OR_UNSET_FLAG(OB_PERIODIC_MOL); }
     bool   HasFlag(int flag)   { return (_flags & flag) ? true : false; }
     void   SetFlag(int flag)   { _flags |= flag; }
     void   UnsetFlag(int flag) { _flags &= (~(flag)); }
     void   SetFlags(int flags) { _flags = flags; }
+
     //@}
 
     //! \name Molecule modification methods
@@ -430,37 +437,37 @@ enum HydrogenType { AllHydrogen, PolarHydrogen, NonPolarHydrogen };
     void Rotate(const double m[9],int nconf);
     //! Translate to the center of all coordinates (for this conformer)
     void Center();
-    //! Delete all hydrogens from the molecule
+    //! Suppress hydrogens by converting explicit hydrogen atoms to implicit
     //! \return Success
     bool DeleteHydrogens();
-    //! Delete all hydrogens from the supplied atom
+    //! Suppress explicit hydrogen atoms on the supplied atom
     //! \return Success
     bool DeleteHydrogens(OBAtom*);
-    //! Delete all hydrogen atoms connected to a polar atom
+    //! Suppress explicit hydrogen atoms connected to a polar atom
     //! \see OBAtom::IsPolarHydrogen
     //! \since version 2.4
     bool DeletePolarHydrogens();
-    //! Delete all hydrogen atoms connected to a non-polar atom
+    //! Suppress explicit hydrogen atoms connected to a non-polar atom
     //! \see OBAtom::IsNonPolarHydrogen
     bool DeleteNonPolarHydrogens();
-    //! Delete the supplied atom if it is a hydrogen
+    //! Suppress the supplied atom if it is a hydrogen
     //! (Helper function for DeleteHydrogens)
     bool DeleteHydrogen(OBAtom*);
-    //! Add hydrogens to the entire molecule to fill out implicit valence spots
+    //! Convert implicit hydrogens to explicit atoms in the molecular graph
     //! \param polaronly    Whether to add hydrogens only to polar atoms
     //! (i.e., not to C atoms)
     //! \param correctForPH Whether to call CorrectForPH() first
     //! \param pH The pH to use for CorrectForPH() modification
     //! \return Whether any hydrogens were added
     bool AddHydrogens(bool polaronly=false,bool correctForPH=false, double pH=7.4);
-    //! Add hydrogens only to the supplied atom to fill out implicit valence
+    //! For a particular atom, convert implicit hydrogens to explicit atoms in the molecular graph
     bool AddHydrogens(OBAtom*);
-    //! Add only polar hydrogens (i.e., attached to polar atoms, not C)
+    //! For polar atoms only, convert implicit hydrogens to explicit atoms in the molecular graph
     bool AddPolarHydrogens();
-    //! Add only nonpolar hydrogens (i.e., attached to C)
+    //! For non-polar atoms only, convert implicit hydrogens to explicit atoms in the molecular graph
     //! \since version 2.4
     bool AddNonPolarHydrogens();
-    //! Add polar and/or nonpolar hydrogens
+    //! For polar and/or non-polar atoms, convert implicit hydrogens to explicit atoms in the molecular graph
     //! \since verison 2.4
     bool AddNewHydrogens(HydrogenType whichHydrogen, bool correctForPH=false, double pH=7.4);
 
@@ -587,6 +594,9 @@ enum HydrogenType { AllHydrogen, PolarHydrogen, NonPolarHydrogen };
     bool HasSpinMultiplicityAssigned() { return(HasFlag(OB_ATOMSPIN_MOL)); }
     //! Does this OBMol represent a reaction?
     bool IsReaction()                  { return HasFlag(OB_REACTION_MOL); }
+    //! Is this molecule periodic? Should periodic boundary conditions be applied?
+    bool IsPeriodic() { return(HasFlag(OB_PERIODIC_MOL)); }
+
     //! Are there any atoms in this molecule?
     bool Empty()                       { return(_natoms == 0);          }
     //@}

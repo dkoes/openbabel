@@ -479,13 +479,16 @@ endif()
 
 
 find_package(Boost COMPONENTS filesystem iostreams unit_test_framework)
-if(Boost_FOUND AND BUILD_SHARED)
-    include_directories(${Boost_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
-    option(WITH_MAEPARSER "Build Maestro support" ON)
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
+  option(WITH_MAEPARSER "Build Maestro support" ON)
+  if(BUILD_SHARED)
     option(WITH_COORDGEN "Build Coordgen support" ON)
-else()
-    option(WITH_MAEPARSER "Build Maestro support" OFF)
+  else()
     option(WITH_COORDGEN "Build Coordgen support" OFF)
+  endif()
+else()
+  option(WITH_COORDGEN "Build Coordgen support" OFF)
 endif()
 
 if(WITH_MAEPARSER)
@@ -501,6 +504,8 @@ if(WITH_MAEPARSER)
       set(MAEPARSER_VERSION "master" CACHE STRING "Maeparser fallback version to download")
 
       set(MAEPARSER_DIR "${openbabel_SOURCE_DIR}/external/maeparser-${MAEPARSER_VERSION}")
+
+      option(MAEPARSER_BUILD_SHARED_LIBS "Build maeparser as a shared library" ${BUILD_SHARED})
 
       # Do not build the test, as it will be put into the bin dir, where it won't be found by the test runner.
       set(MAEPARSER_BUILD_TESTS OFF CACHE BOOL "Disable Maeparser tests")
@@ -755,7 +760,7 @@ configure_file("${openbabel_SOURCE_DIR}/OpenBabel3ConfigVersion.cmake.in"
 # Now to configure the installed config file.
 set(OB_CONFIG_DIR "${LIB_INSTALL_DIR}/cmake/openbabel3")
 set(OpenBabel3_INCLUDE_DIRS "\${OpenBabel3_INSTALL_PREFIX}/${OB_INCLUDE_DIRS}")
-set(OpenBabel3_LIBRARY "$<TARGET_FILE:openbabel>")
+set(OpenBabel3_LIBRARIES "$<TARGET_FILE:openbabel>")
 
 set(OB_EXPORTS_FILE
   "\${OpenBabel3_INSTALL_PREFIX}/${OB_CONFIG_DIR}/OpenBabel3_EXPORTS.cmake")
