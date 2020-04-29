@@ -37,7 +37,7 @@ endif()
 ###################
 
 if (PYTHON_BINDINGS)
-  if (EXISTS ${openbabel_SOURCE_DIR}/scripts/python/openbabel-python.cpp OR RUN_SWIG)
+  if (EXISTS ${openbabel_SOURCE_DIR}/scripts/python/openbabel/openbabel-python.cpp OR RUN_SWIG)
     find_package(PythonInterp)
     if (NOT PYTHONINTERP_FOUND)
       message(STATUS "Python interpreter NOT found")
@@ -57,10 +57,10 @@ if (PYTHON_BINDINGS)
       message(STATUS "Python bindings will be compiled")
     endif(PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND)
 
-  else (EXISTS ${openbabel_SOURCE_DIR}/scripts/python/openbabel-python.cpp OR RUN_SWIG)
+  else ()
     message(STATUS "Warning: Python bindings NOT found. Generate using -DRUN_SWIG=ON.")
 
-  endif (EXISTS ${openbabel_SOURCE_DIR}/scripts/python/openbabel-python.cpp OR RUN_SWIG)
+  endif ()
 endif (PYTHON_BINDINGS)
 
 if (DO_PYTHON_BINDINGS)
@@ -268,17 +268,18 @@ if (DO_R_BINDINGS)
     if (RUN_SWIG)
 		 add_custom_command(OUTPUT ${openbabel_SOURCE_DIR}/scripts/R/openbabel-R.cpp
 			 COMMAND ${CMAKE_COMMAND} -E make_directory ${openbabel_BINARY_DIR}/scripts/R
-			 COMMAND ${SWIG_EXECUTABLE} -r -package openbabelR  -c++ -small -O -templatereduce -naturalvar -I${openbabel_SOURCE_DIR}/include -I${openbabel_BINARY_DIR}/include -o ${openbabel_SOURCE_DIR}/scripts/R/openbabel-R.cpp ${eigen_define} -outdir ${openbabel_BINARY_DIR}/scripts/R ${openbabel_SOURCE_DIR}/scripts/openbabel-R.i
+			 COMMAND ${SWIG_EXECUTABLE} -r -c++ -small -O -templatereduce -naturalvar -I${openbabel_SOURCE_DIR}/include -I${openbabel_BINARY_DIR}/include -o ${openbabel_SOURCE_DIR}/scripts/R/openbabel-R.cpp ${eigen_define} -outdir ${openbabel_BINARY_DIR}/scripts/R ${openbabel_SOURCE_DIR}/scripts/openbabel-R.i
 			 # COMMAND sed  -i  -e "'s/reg\.finalizer(\(.*\)) /reg.finalizer(\1); /g'" ${openbabel_BINARY_DIR}/scripts/R/openbabelR.R
 			 MAIN_DEPENDENCY openbabel-R.i
       )
     endif (RUN_SWIG)
 
 	 add_library(bindings_R MODULE ${openbabel_SOURCE_DIR}/scripts/R/openbabel-R.cpp)
+	 set(R_EXTRA_LINK_FLAGS "-Wl,--unresolved-symbols=ignore-all")
 	 if(BINDINGS_ONLY)
-		 target_link_libraries(bindings_R ${BABEL_SYSTEM_LIBRARY})
+		 target_link_libraries(bindings_R ${BABEL_SYSTEM_LIBRARY} ${R_EXTRA_LINK_FLAGS})
 	 else()
-		 target_link_libraries(bindings_R ${BABEL_LIBRARY})
+		 target_link_libraries(bindings_R ${BABEL_LIBRARY} ${R_EXTRA_LINK_FLAGS})
 	 endif()
 
 	 set_target_properties(bindings_R PROPERTIES
@@ -290,7 +291,7 @@ if (DO_R_BINDINGS)
 	 install(TARGETS bindings_R
             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
 				COMPONENT bindings_R)
-	 install(FILES ${openbabel_SOURCE_DIR}/scripts/R/openbabel_java.R
+	 install(FILES ${openbabel_BINARY_DIR}/scripts/R/openbabel_R.R
             DESTINATION ${LIB_INSTALL_DIR}
 				COMPONENT bindings_R)
 

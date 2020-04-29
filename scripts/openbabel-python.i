@@ -28,6 +28,7 @@
 #include <openbabel/reactionfacade.h>
 #include <openbabel/residue.h>
 #include <openbabel/internalcoord.h>
+#include <openbabel/bondtyper.h>
 
 #include <openbabel/ring.h>
 #include <openbabel/obconversion.h>
@@ -231,6 +232,7 @@ CAST_GENERICDATA_TO(UnitCell)
 CAST_GENERICDATA_TO(VectorData)
 CAST_GENERICDATA_TO(VibrationData)
 CAST_GENERICDATA_TO(VirtualBond)
+CAST_GENERICDATA_TO(StereoBase)
 CAST_GENERICDATA_TO(TetrahedralStereo)
 CAST_GENERICDATA_TO(CisTransStereo)
 CAST_GENERICDATA_TO(SquarePlanarStereo)
