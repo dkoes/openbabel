@@ -31,7 +31,7 @@ endif()
 # Note that for "beta" releases, we should start at x.90.0 -- we've
 # had too many 1.100.1 releases. :-)
 set(BABEL_MAJ_VER   3)
-set(BABEL_MIN_VER   0)
+set(BABEL_MIN_VER   1)
 set(BABEL_PATCH_VER 0)
 
 # This should be phased out in preference for just using the target name
@@ -501,7 +501,7 @@ if(WITH_MAEPARSER)
 
     else()
 
-      set(MAEPARSER_VERSION "master" CACHE STRING "Maeparser fallback version to download")
+      set(MAEPARSER_VERSION "v1.2.3" CACHE STRING "Maeparser fallback version to download")
 
       set(MAEPARSER_DIR "${openbabel_SOURCE_DIR}/external/maeparser-${MAEPARSER_VERSION}")
 
