@@ -958,7 +958,7 @@ namespace OpenBabel {
     if (bkExt != nullptr) {
       bk=bkExt;
     } else {
-      bk=(neighbourlist *)malloc(nAtoms() * sizeof(adjustedlist));
+      bk=(neighbourlist *)calloc(nAtoms(), sizeof(adjustedlist));
       defineBondConn(bk);
     }
     nBondNo=0;

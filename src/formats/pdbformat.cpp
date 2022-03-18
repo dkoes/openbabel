@@ -1141,7 +1141,7 @@ namespace OpenBabel
               && res->GetNumString() == resnum
               && static_cast<int>(res->GetChain()) == chain
               && static_cast<int>(res->GetInsertionCode()) == insertioncode) {
-            if (insertioncode) fprintf(stderr,"I: identified residue wrt insertion code: '%c'\n",insertioncode);
+            if (insertioncode) obErrorLog.ThrowError(__FUNCTION__,std::string("I: identified residue wrt insertion code: '")+insertioncode,obWarning);
             break;
           }
 
