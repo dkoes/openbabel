@@ -4861,12 +4861,15 @@ namespace OpenBabel {
     // Initialise aEQ, a 2D bool matrix of size [molecule1->nAtoms()][nAtoms()] and set all to false
     bool **aEQ = (bool **)calloc(molecule1->nAtoms(),sizeof(bool *));
     for (int i=0; i<molecule1->nAtoms(); ++i) {
-      aEQ[i] = (bool *)calloc(nAtoms(),sizeof(bool ));
+      for (int j=0; j<nAtoms(); ++j)
+        aEQ[i][j] = false;
     }
     // Initialise bEQ, a 2D bool matrix of size [molecule1->nBonds()][nBonds()] and set all to false
     bool **bEQ = (bool **)calloc(molecule1->nBonds(),sizeof(bool *));
     for (int i=0; i<molecule1->nBonds(); ++i) {
       bEQ[i] = (bool *)calloc(nBonds(),sizeof(bool ));
+      for (int j=0; j<nBonds(); ++j)
+        bEQ[i][j] = false;
     }
 
     cycleNumber=0;
